@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.compass.msavaliadorcredito.model.SituacaoCliente;
+import com.compass.msavaliadorcredito.service.AvaliadorCreditoService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -14,6 +15,8 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("avaliacoes-credito")
 @RequiredArgsConstructor
 public class AvaliadorCreditoController {
+
+    private final AvaliadorCreditoService avaliadorCreditoService;
 
     @GetMapping
     public String status() {
@@ -23,5 +26,6 @@ public class AvaliadorCreditoController {
     @GetMapping(value = "situacao-cliente", params = "cpf")
     public ResponseEntity<SituacaoCliente> consultaSituacaoCliente(@RequestParam("cpf") String cpf) {
         SituacaoCliente situacaoCliente = avaliadorCreditoService.obterSituacaoCliente(cpf);
+        return ResponseEntity.ok(situacaoCliente);
     }
 }
