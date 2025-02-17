@@ -11,7 +11,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.compass.msavaliadorcredito.ex.DadosClienteNotFoundException;
 import com.compass.msavaliadorcredito.ex.ErroComunicacaoMicroservicesException;
+import com.compass.msavaliadorcredito.ex.ErroSolicitacaoCartaoException;
 import com.compass.msavaliadorcredito.model.DadosAvaliacao;
+import com.compass.msavaliadorcredito.model.DadosSolicitacaoEmissaoCartao;
+import com.compass.msavaliadorcredito.model.ProtocoloSolicitacaoCartao;
 import com.compass.msavaliadorcredito.model.RetornoAvaliacao;
 import com.compass.msavaliadorcredito.model.SituacaoCliente;
 import com.compass.msavaliadorcredito.service.AvaliadorCreditoService;
@@ -31,7 +34,7 @@ public class AvaliadorCreditoController {
     }
 
     @GetMapping(value = "situacao-cliente", params = "cpf")
-    public ResponseEntity consultaSituacaoCliente(@RequestParam("cpf") String cpf) {
+    public ResponseEntity consultarSituacaoCliente(@RequestParam("cpf") String cpf) {
         try{
             SituacaoCliente situacaoCliente = avaliadorCreditoService.obterSituacaoCliente(cpf);
             return ResponseEntity.ok(situacaoCliente);
@@ -53,6 +56,16 @@ public class AvaliadorCreditoController {
             return ResponseEntity.notFound().build();
         } catch (ErroComunicacaoMicroservicesException e) {
             return ResponseEntity.status(HttpStatus.resolve(e.getStatus())).body(e.getMessage());
+        }
+    }
+
+    @PostMapping("solicitacoes-cartao")
+    public ResponseEntity solicitarCartao(@RequestBody DadosSolicitacaoEmissaoCartao dados) {
+        try {
+            ProtocoloSolicitacaoCartao protocoloSolicitacaoCartao = avaliadorCreditoService.solicitarEmissaoCartao(dados);
+            return ResponseEntity.ok(protocoloSolicitacaoCartao);
+        } catch (ErroSolicitacaoCartaoException e) {
+            return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
 }
